@@ -1,177 +1,171 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-class DoublyLinkedList {
+class SinglyLinkedList {
     struct Node {
         int data;
-        Node* prev;
         Node* next;
+        Node(int val) : data(val), next(nullptr) {}
     };
 
     Node* head;
 
 public:
-    DoublyLinkedList() {
-        head = nullptr;
+    SinglyLinkedList() : head(nullptr) {
+        // Default initial values
+        insertAtEnd(10);
+        insertAtEnd(20);
+        insertAtEnd(30);
     }
 
     // Insert at Beginning
     void insertAtBeginning(int val) {
-        Node* newNode = new Node{val, nullptr, head};
-        if (head) head->prev = newNode;
+        Node* newNode = new Node(val);
+        newNode->next = head;
         head = newNode;
+        cout << val << " inserted at the beginning.\n";
     }
 
     // Insert at End
     void insertAtEnd(int val) {
-        Node* newNode = new Node{val, nullptr, nullptr};
-        if (!head) {
-            head = newNode;
-            return;
+        Node* newNode = new Node(val);
+        if (!head) { 
+            head = newNode; 
+            cout << val << " inserted at the end.\n";
+            return; 
         }
         Node* temp = head;
         while (temp->next) temp = temp->next;
         temp->next = newNode;
-        newNode->prev = temp;
+        cout << val << " inserted at the end.\n";
     }
 
-    // Insert Before a Given Key
-    void insertBefore(int key, int val) {
-        if (!head) {
-            cout << "List is empty!\n";
-            return;
-        }
-        if (head->data == key) {
-            insertAtBeginning(val);
-            return;
-        }
-        Node* temp = head;
-        while (temp && temp->data != key) temp = temp->next;
-        if (!temp) {
-            cout << "Key not found!\n";
-            return;
-        }
-        Node* newNode = new Node{val, temp->prev, temp};
-        temp->prev->next = newNode;
-        temp->prev = newNode;
-    }
-
-    // Insert After a Given Key
+    // Insert After a Key
     void insertAfter(int key, int val) {
         Node* temp = head;
         while (temp && temp->data != key) temp = temp->next;
-        if (!temp) {
-            cout << "Key not found!\n";
-            return;
+        if (!temp) { 
+            cout << "Key " << key << " not found!\n"; 
+            return; 
         }
-        Node* newNode = new Node{val, temp, temp->next};
-        if (temp->next) temp->next->prev = newNode;
+        Node* newNode = new Node(val);
+        newNode->next = temp->next;
         temp->next = newNode;
+        cout << val << " inserted after " << key << ".\n";
+    }
+
+    // Insert Before a Key
+    void insertBefore(int key, int val) {
+        if (!head) { 
+            cout << "List empty!\n"; 
+            return; 
+        }
+        if (head->data == key) { 
+            insertAtBeginning(val); 
+            return; 
+        }
+        Node* temp = head;
+        while (temp->next && temp->next->data != key) temp = temp->next;
+        if (!temp->next) { 
+            cout << "Key " << key << " not found!\n"; 
+            return; 
+        }
+        Node* newNode = new Node(val);
+        newNode->next = temp->next;
+        temp->next = newNode;
+        cout << val << " inserted before " << key << ".\n";
     }
 
     // Delete from Beginning
     void deleteBeginning() {
-        if (!head) {
-            cout << "List is empty!\n";
-            return;
+        if (!head) { 
+            cout << "List empty!\n"; 
+            return; 
         }
         Node* temp = head;
         head = head->next;
-        if (head) head->prev = nullptr;
+        cout << temp->data << " deleted from the beginning.\n";
         delete temp;
     }
 
     // Delete from End
     void deleteEnd() {
-        if (!head) {
-            cout << "List is empty!\n";
-            return;
+        if (!head) { 
+            cout << "List empty!\n"; 
+            return; 
         }
         if (!head->next) {
-            delete head;
-            head = nullptr;
+            cout << head->data << " deleted from the end.\n";
+            delete head; 
+            head = nullptr; 
             return;
         }
         Node* temp = head;
-        while (temp->next) temp = temp->next;
-        temp->prev->next = nullptr;
-        delete temp;
+        while (temp->next->next) temp = temp->next;
+        cout << temp->next->data << " deleted from the end.\n";
+        delete temp->next;
+        temp->next = nullptr;
     }
 
-    // Delete a Specific Node by Key
+    // Delete Specific Node
     void deleteNode(int key) {
-        if (!head) {
-            cout << "List is empty!\n";
-            return;
+        if (!head) { 
+            cout << "List empty!\n"; 
+            return; 
         }
-        if (head->data == key) {
-            deleteBeginning();
-            return;
+        if (head->data == key) { 
+            deleteBeginning(); 
+            return; 
         }
         Node* temp = head;
-        while (temp && temp->data != key) temp = temp->next;
-        if (!temp) {
-            cout << "Key not found!\n";
-            return;
+        while (temp->next && temp->next->data != key) temp = temp->next;
+        if (!temp->next) { 
+            cout << "Key " << key << " not found!\n"; 
+            return; 
         }
-        if (temp->next) temp->next->prev = temp->prev;
-        if (temp->prev) temp->prev->next = temp->next;
-        delete temp;
+        Node* delNode = temp->next;
+        temp->next = temp->next->next;
+        cout << delNode->data << " deleted from the list.\n";
+        delete delNode;
     }
 
-    // Search for a Node
+    // Search
     void search(int key) {
         Node* temp = head;
         int pos = 1;
         while (temp) {
-            if (temp->data == key) {
-                cout << "Found at position " << pos << endl;
-                return;
+            if (temp->data == key) { 
+                cout << key << " found at position " << pos << ".\n"; 
+                return; 
             }
             temp = temp->next;
             pos++;
         }
-        cout << "Not found\n";
+        cout << key << " not found in the list.\n";
     }
 
-    // Display the List
+    // Display
     void display() {
-        if (!head) {
-            cout << "List is empty!\n";
-            return;
+        if (!head) { 
+            cout << "List empty!\n"; 
+            return; 
         }
         Node* temp = head;
-        cout << "List (Forward): ";
-        while (temp) {
-            cout << temp->data << " ";
-            if (!temp->next) break;
-            temp = temp->next;
-        }
-        cout << "\nList (Reverse): ";
-        while (temp) {
-            cout << temp->data << " ";
-            temp = temp->prev;
+        cout << "List: ";
+        while (temp) { 
+            cout << temp->data << " "; 
+            temp = temp->next; 
         }
         cout << endl;
-    }
-
-    // Destructor to free memory
-    ~DoublyLinkedList() {
-        Node* temp = head;
-        while (temp) {
-            Node* next = temp->next;
-            delete temp;
-            temp = next;
-        }
     }
 };
 
 int main() {
-    DoublyLinkedList list;
+    SinglyLinkedList list;
     int choice, val, key;
 
     while (true) {
-        cout << "\n===== Doubly Linked List Menu =====\n";
+        cout << "\n===== Singly Linked List Menu =====\n";
         cout << "1. Insert at Beginning\n";
         cout << "2. Insert at End\n";
         cout << "3. Insert Before\n";
@@ -185,28 +179,35 @@ int main() {
         cout << "Enter your choice: ";
         cin >> choice;
 
+        if(cin.fail()){   // handle invalid input
+            cin.clear();
+            cin.ignore(INT_MAX,'\n');
+            cout << "Invalid input! Please enter a number.\n";
+            continue;
+        }
+
         switch (choice) {
             case 1:
-                cout << "Enter value: ";
+                cout << "Enter value to insert at beginning: ";
                 cin >> val;
                 list.insertAtBeginning(val);
                 break;
             case 2:
-                cout << "Enter value: ";
+                cout << "Enter value to insert at end: ";
                 cin >> val;
                 list.insertAtEnd(val);
                 break;
             case 3:
-                cout << "Enter key: ";
+                cout << "Enter key to insert before: ";
                 cin >> key;
-                cout << "Enter value: ";
+                cout << "Enter value to insert: ";
                 cin >> val;
                 list.insertBefore(key, val);
                 break;
             case 4:
-                cout << "Enter key: ";
+                cout << "Enter key to insert after: ";
                 cin >> key;
-                cout << "Enter value: ";
+                cout << "Enter value to insert: ";
                 cin >> val;
                 list.insertAfter(key, val);
                 break;
@@ -217,12 +218,12 @@ int main() {
                 list.deleteEnd();
                 break;
             case 7:
-                cout << "Enter key: ";
+                cout << "Enter key to delete: ";
                 cin >> key;
                 list.deleteNode(key);
                 break;
             case 8:
-                cout << "Enter key: ";
+                cout << "Enter key to search: ";
                 cin >> key;
                 list.search(key);
                 break;
@@ -230,10 +231,10 @@ int main() {
                 list.display();
                 break;
             case 0:
-                cout << "Exiting...\n";
+                cout << "Exiting program.\n";
                 return 0;
             default:
-                cout << "Invalid choice!\n";
+                cout << "Invalid choice! Please try again.\n";
         }
     }
 }
